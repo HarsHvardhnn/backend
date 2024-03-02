@@ -17,7 +17,17 @@ export class AuthService {
    user.Password = createAuthDto.Password;
     return user.save();
   }
-
+  
+  async login(Email: string, Password: string): Promise<any> {
+    try {
+      const user = await this.AuthModel.findOne({ Email: Email }).exec();
+      console.log(user.Email);
+      return `User found ${JSON.stringify(user.Email)}`;
+    } catch (error) {
+      console.error('Error finding user:', error);
+      return 'Error finding user';
+    }
+  }
   findAll() {
     return `This action returns all auth`;
   }

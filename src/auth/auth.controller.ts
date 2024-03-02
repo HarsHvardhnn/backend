@@ -7,11 +7,15 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
+  @Post('signup')
   create(@Body() createAuthDto: CreateAuthDto) {
     return this.authService.create(createAuthDto);
   }
-
+  @Post('login')
+  async login(@Body() requestBody:{Email:string , Password:string}){
+    const {Email, Password} = requestBody;
+    return this.authService.login(Email,Password);
+  }
   @Get()
   findAll() {
     return this.authService.findAll();
