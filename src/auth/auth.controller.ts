@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { LocalGuard } from './guards/local.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -12,18 +14,24 @@ export class AuthController {
     return this.authService.create(createAuthDto);
   }
   @Post('login')
-  async login(@Body() requestBody:{Email:string , Password:string}){
-    const {Email, Password} = requestBody;
-    return this.authService.login(Email,Password);
+  @UseGuards(LocalGuard)
+  async login(@Body() requestBody:{Username:string ,Password :string}){
+    const {Username , Password} = requestBody;
+    const user=  this.authService.login(Username , Password);
+    console.log(user);
+    if(!user){
+      return 'invalid user';
+    }
+    return user;
   }
   @Get()
   findAll() {
     return this.authService.findAll();
   }
 
-  @Get(':Email')
-  findOne(@Param('Email') Email: string) {
-    return this.authService.findOne(Email);
+  @Get(':Username')
+  findOne(@Param('Username') Username: string) {
+    return this.authService.findOne(Username);
   }
 
   @Patch(':id')
