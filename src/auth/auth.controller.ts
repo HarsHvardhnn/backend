@@ -4,6 +4,7 @@ import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalGuard } from './guards/local.guard';
+import { LocalStrategy } from './strategies/local.strategy';
 
 @Controller('auth')
 export class AuthController {
@@ -14,11 +15,11 @@ export class AuthController {
     return this.authService.create(createAuthDto);
   }
   @Post('login')
-  @UseGuards(LocalGuard)
+  @UseGuards(AuthGuard('local'))
   async login(@Body() requestBody:{Username:string ,Password :string}){
     const {Username , Password} = requestBody;
-    const user=  this.authService.login(Username , Password);
-    console.log(user);
+    const user= await this.authService.login(Username , Password);
+    
     if(!user){
       return 'invalid user';
     }
